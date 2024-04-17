@@ -1,0 +1,697 @@
+앞에서 배운 개념들을 바탕으로 실제 상황에 적용해보면서, 전형적인 웹 애플리케이션을 만들어보자
+
+사용자가 입력한 정보를 서버에 저장해놓고 저장해놓은 것을 꺼내오는 과정을 진행할 것인데,
+
+서버에 저장해놓은 것을 가져오는 방식에 중점을 두자.
+
+현대적인 애플리케이션은 사용자가 작성한 정보에 대해서 데이터 베이스에 저장을 하는 것이 일반적인데, 이 예제에서는 파일에 저장하는 것으로 할 것이다.
+
+파일을 다루는 것이 굉장히 쉽기 때문에, 여기에서는 DB 보다는 파일에 저장할 것이다.
+
+하지만, 최종 목적지는 DB 가 되어야 할 것이다.
+
+Data 라는 폴더에 파일의 형태로 저장을 할 것이다.
+
+해당 파일에서 데이터를 수정했다면, html 에 바로 적용이 되는 구조를 만들 것이다.
+
+**DB 에 대해서 추후에 배우는 것이 좋다.**
+
+app_file.js 을 만들어서 서버 파일로 사용할 것이고, data 파일을 정보를 저장하는 폴더.
+
+views_file 은 템플릿 엔진을 저장하는 폴더가 될 것이다.
+
+public_file 은 static 한 자바스크립트나 css 파일이 필요하다면, 해당 폴더에 보관할 것이다. 
+
+---
+
+# 2. 라우팅
+
+## (1) 사용할 폴더를 생성한다.
+
+- 새로운 서버 파일은 **app_file.js**
+- 사용할 템플릿을 모아놓을 폴더는 **views_file**
+- 자바스크립트나 css 파일을 모을 폴더는 **public_file**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/7d48406c-6828-41c3-955c-3fe14ff4c9c1/Untitled.png
+
+## (2) `app_file.js` 에 기본적인 서버 형식을 작성한다.
+
+```jsx
+var express = require('express');
+// express 를 사용한다.
+var app = express();
+// 애플리케이션 객체를 app 에 넣는다.
+app.listen(3000,function(){
+	console.log('Connected, 3000 port!');
+})
+// 객체 app 에 있는 메서드 중에서 listen 메서드를 사용하여 3000번 포트로 설정한다.
+// connection 완료
+```
+
+## (3) `app_file.js` 서버 파일에 view 설정을 한다.
+
+```jsx
+app.set('views','./views_file');
+// views 를 /views_file 폴더로 설정한다.
+app.set('view engine', 'jade');
+// view 엔진으로 jade를 사욯알 것이다.
+```
+
+## (4) 간단하게 라우팅할 서버를 생성한다.
+
+```jsx
+app.get('/topic/new',function(req,res){
+  res.render('new');
+})
+// /topic/new 라는 경로로 접근하면, new.jade 파일을 보여줄 것이다.
+app.post('/topic',function(req,res){
+  res.send('Hi');
+})
+// 사용자가 /topic 경로로 POST 방식으로 글을 작성해서 보내면, 
+// 서버로 보내져서 다루는 과정으로 진행할 것이다.
+```
+
+## (5) 사용할 new.jade 파일을 작성한다.
+
+```html
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    form(action='/topic' method='post')
+      p
+        input(type='text' name='title' placeholder='title')
+      p
+        textarea(name='description')
+      p
+        input(type='submit')
+```
+
+- meta 를 통해서, 사용할 방식은 utf-8 이라는 것을 보여준다.
+- form 을 통해서, action 으로 사용할 라우터와 연결하고, 전송방식을 설정한다. (post 방식으로 보낼것)
+- input 과 textarea 를 작성한다. (사용자가 정보를 입력할 공간)
+
+## (6) jade 파일의 자동 줄 바꿈을 위해서, 자동 줄 바꿈 코드를 사용한다.
+
+```jsx
+app.locals.pretty = true;
+// jade 파일을 자동 줄바꿈함으로써, 이쁘게 보이도록 설정한다.
+```
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6b4e3317-1f0f-4621-8a31-fcd4e3483b7b/Untitled.png
+
+---
+
+# 3. 본문 저장
+
+## (1) body-parser 를 먼저 설치한다. (post 전달된 정보를 다루기 위해서)
+
+```html
+npm install --save body-parser
+```
+
+body-parser 에 대한 정보는 해당 사이트에서 확인한다.
+
+[body-parser](https://www.npmjs.com/package/body-parser)
+
+설치한 모듈을 세팅하고, 사용하기 위한 코드를 찾아서 가져다가 붙이자.
+
+```jsx
+var bodyParser = require('body-Parser');
+// body-Parser 사용을 위해서 설정
+app.use(bodyParser.urlencoded({ extended: false }));
+```
+
+## (2) body-parser 를 사용하여 post 방식의 데이터 전송 라우터를 수정한다.
+
+```jsx
+app.post('/topic',function(req,res){
+  var title = req.body.title;
+  var description = req.body.description;
+	res.send('title is' + title);
+});
+// bodyParser 를 통해서 req 객체에 body 라는 객체가 생성
+// title 과 description 변수를 설정한다. req.body 를 사용
+```
+
+## (3) 사용자가 작성한 정보를 파일로 저장한다.
+
+- 파일로 저장하기 위해서 `fs` 를 사용하고 `fs` 모듈의 메서드인 `fs.writeFile` 을 사용한다.
+
+우선, `fs` 모듈을 설정한다.
+
+```jsx
+var fs = require('fs')
+// filesystem 을 사용하기 위해서, (파일 형태로 저장하려고 하기 때문에) fs 모듈 설정
+```
+
+`fs.writeFile` 메서드를 사용한다.
+
+```jsx
+fs.writeFile('data/'+title, description, function(err){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } 
+		res.send('Success!');
+		});
+});
+```
+
+- fs.writeFile 에 대한 정보는, 해당 사이트를 참고하자.
+
+[Node.js v13.13.0 Documentation](https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback)
+
+- `fs.writeFile('저장할 파일의 경로', data, callback(err))` 로 이루어져있다.
+- 저장할 경로에 패당하는 파일이 없다면, 오류가 발생한다.
+- 만약, 에러가 발생한다면, if 문에 `res.status(500).send('Internal Server Error')` 가 발생
+- 내부적인 오류정보를 사용자에게 보여주는 것은 보안성의 큰 위험이 될 수 있기 때문에, `.send` 를 통해서 사용자에게 다른 형태로 보여준다.
+- 오류가 발생하면, 디버깅을 위해서 console.log() 를 찍어준다.
+
+## (4) 사용자의 정보를 입력하고 실행해본다.
+
+`data` 라는  폴더에, `nodejs` (`title` 에 입력한 사용자의 정보) 이름으로 되어있는 파일이 생성되었고,
+
+내용은 `description`에 입력한 내용이 들어간 것을 확인할 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d55f397e-b217-4b8a-92c4-414fd5d7fe68/Untitled.png
+
+---
+
+# 4. 글 목록 만들기
+
+데이터를 저장하는 것은 위의 과정에서 마무리되었고, 이제는 데이터를 가져오는 것을 작성해보자.
+
+입력을 했으니 이제는 출력을 할 차례..!
+
+주소를 직접 치고 들어가는 것은 GET. get 에 대한 라우트를 마련해보자.
+
+## (1) `/topic` 을 주소창에 입력해서 가져왔을 때, 해당하는 라우터를 만들어보자.
+
+**(app.get('/topic') 코드)**
+
+```jsx
+app.get('/topic',function(req,res){
+  fs.readdir('data',function(err,files){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    res.render('view', {topics:files});
+  })
+});
+```
+
+- app.get 을 생성해준다.
+- 생성한 파일을 먼저 읽어야하기 때문에, `fs` 모듈의 `readdir` 메서드를 이용한다.
+
+**(`readdir` 관련 정보 사이트)**
+
+[Node.js v13.13.0 Documentation](https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback)
+
+- `readdir` 의 형식은,`fs.readdir(path[, options], callback)` 으로 이루어져있다. 우리들에게 path 는 사용자가 작성한 파일이 있는 data 폴더이고 콜백함수로 이어지면 되는데, 콜백함수의 인자로, (err,files) 가 들어가야한다. 여기에서 files 는 data 폴더에 있는 파일이름이 들어간다.
+- 똑같이 오류가 발생하면, `res.status(500).send('Internal Server Error')` 로 처리를 해준다.
+- 이렇게 해서 `data` 폴더에서 가져온 데이터들을 만들어놓은 `view.jade` 파일형식에 적용하기 위해서, `topics` 라는 변수에 `files`. 가져온 파일의 데이터를 담아서 `view.jade` 로 보내준다.
+
+## (2) `view.jade` 파일에 불러온 데이터를 활용해서 프로그래밍 언어로 나열되도록 작성하기
+
+jade 에서 반복문을 사용해야한다.
+
+jade 에서 반복문을 어떻게 사용하는지 먼저 알아보도록 한다.
+
+[Jade Language](http://jade-lang.com/reference/iteration)
+
+해당 사이트를 읽어보면, 이처럼 jade 에 작성했다면,
+
+```
+ul
+each val in [1, 2, 3, 4, 5]
+li= val
+```
+
+이러한 형식으로 나오게 된다.
+
+```
+<ul>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+<li>4</li>
+<li>5</li>
+</ul>
+```
+
+이를 활용해서 가져온 정보를 반복문을 통해서 담아보도록하자.
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1 Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+```
+
+- `ul` 아래부터 반복해야하기 때문에, `ul` 까지는 건들지 않는다.
+- 위에서 찾아본, 반복문을 작성한다. `each topic in topics` 여기에서 `topic` 은 임의로 정한 변수명이고, `topics` 가 중요한데, `topics` 는 `app_file.js` 에서 if 구문을 통해서 `err` 가 없을 때 나오는,
+
+```jsx
+res.render('view', {topics:files})
+```
+
+해당 코드를 통해서, 사용자의 정보가 담긴 `files` 를 담은 변수가 바로 `topics` 이다.
+
+- 이후로, `li` 와 링크형식으로 작성이 되어야하기 때문에 `a(href='/topic/'+topic)= topic` 로 작성하면된다. 링크는, [localhost:3000/topic/javascript](http://localhost:3000/topic/javascript) 와 같은 형식으로 들어가야하기 때문에, 이렇게 작성했다.
+
+### **(결과 출력화면)**
+
+**(/topic)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/02287aae-529a-46bf-98ef-84c59bd1562b/Untitled.png
+
+**(html 페이지 소스)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/befda481-6a3b-4be5-a90c-e4932a56c0a9/Untitled.png
+
+**(`javascript` 링크를 눌렀을 때, 화면)**
+
+**→ /topic/javascript 라우터를 get 방식으로 만들어줘야한다.**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/9c4db74f-f7d8-4298-96a8-7e95029ca715/Untitled.png
+
+**(`nodejs` 링크를 눌렀을 때, 화면)**
+
+**→ /topic/nodejs 라우터를 get 방식으로 만들어줘야한다.**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d429ced7-91e6-4182-87e9-89d15a5e438f/Untitled.png
+
+이 후에는, 본문을 가져오는 라우터를 작성해볼 것이다.
+
+---
+
+# 5. 본문 읽기
+
+만약 사용자가 /topic/javascript 의 형식으로 접근한다면 어떻게 해야할까?
+
+어떻게 라우터와 연결할 것인가? 를 먼저 생각해야한다.
+
+## (1) URL에 찍히는 id 값을 가져오자
+
+사용자가 javascript 링크를 누르면, /topic/javascript 로 이동하게 된다.
+
+이 때, URL 에 나오는 id 값을 가져오면 된다. (링크를 눌러서 정보를 가져오는 방식은 GET)
+
+```jsx
+app.get('/topic/:id',function(req,res){
+  var id = req.params.id;
+```
+
+을 통해서, URL 상에 들어가는 id 값을 받아올 수 있다.
+
+## (2) 받아온 정보를 바탕으로, id 에 해당하는 정보를 가져온다.
+
+저장되어있는 정보를 먼저 가져와야한다.
+
+```jsx
+fs.readdir('data',function(err,files){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } res.render('view',{topics:files});
+})
+```
+
+을 통해서, `data` 폴더 밑에 있는 `files` 의 이름이 담긴 정보를 `topics` 에 담는다.
+
+또한, `files` 안에 있는 `title` 과 `description` 을 가져와야한다.
+
+**(readFile 사용법)**
+
+[Node.js v13.13.0 Documentation](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback)
+
+```jsx
+fs.readFile('data/'+id,'utf8',function(err,data){
+      if (err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }
+      res.render('view',{title:id, description:data});
+    });
+```
+
+`title` 에 해당하는 값은 URL 에 찍힌 `id` 를 담은 `id` 로 가져오고,
+
+`description` 에 해당하는 값은, 파일에 있는 정보를 담은 `data` 를 통해서 가져올 수 있다.
+
+**(다 합친, 완성본)**
+
+```jsx
+app.get('/topic/:id',function(req,res){
+  var id = req.params.id;
+  fs.readdir('data',function(err,files){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    fs.readFile('data/'+id,'utf8',function(err,data){
+      if (err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }
+      res.render('view',{topics:files, title:id, description:data});
+    });
+  })
+});
+```
+
+코드를 통해서,  `view.jade` 파일에 필요한 `topics`, `title`, `description` 을 가져올 수 있게 되었다.
+
+## (3) 가져온 정보들을 바탕으로, view.jade 파일을 수정하기
+
+**(view.jade 파일)**
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1 Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+    article
+      h2=title
+      =description
+```
+
+- ul 에서 반복문이 시작되기 때문에, ul 과 같은 라인에서 시작한다.
+- article 태그를 이용하고 , `h2=title` 그리고 `=description` 을 사용해서 코드를 작성한다.
+
+---
+
+# 6. 코드의 개선
+
+**(수정할 부분)**
+
+- 비어있는 article 태그
+
+**(view.jade 파일)**
+
+```
+article
+      h2=title
+      =description
+```
+
+**(new.jade 파일)**
+
+```
+article
+      form(action='/topic' method='post')
+        p
+          input(type='text' name='title' placeholder='title')
+        p
+          textarea(name='description')
+        p
+          input(type='submit')
+```
+
+- 중복되는 코드가 많음 (app_file.js) → 중복해서 사용하는 코드에 중복성을 없앨 수 있다.
+
+⇒ 하나의 라우트에 여러가지 경로를 설정할 수 있다.
+
+중복되는 코드를 제거하는 것이 가장 중요하다.
+
+중복을 합치면, 해당하는 부분만 수정하면 모든 소스코드들에 작용되지만,
+
+만약, 중복이 없다면 일일이 하나씩 수정작업을 해줘야한다. 
+
+→ 소스코드를 유지/보수가 굉장히 쉬움
+
+각각에 흩어져있는 코드들이 같은 취지로 만든 것이라는 것을 파악하기 쉽지 않다.
+
+중복을 제거해줌으로써, 확인할 필요가 없어지고, 가독성이 좋아진다.
+
+중복을 제거하는 것이 좋은 코드에 첫 걸음이다.
+
+일단, 처음에는 중복이라는 것 없이 막 작성해보고 이후에 코드를 최적화시키는 것이 좋다.
+
+이렇게 하다보면, 중복없이 작성할 수 있는 코드를 처음 작성할 때 짤 수 있다.
+
+**(중복을 없앤 app_file.js)**
+
+```jsx
+// 하나의 라우터에 여러 경로를 합치는 과정 [ ] 안에 넣으면된다.
+// 중복되지 않는 부분을 합친다.
+app.get(['/topic', '/topic/:id'], function(req, res) {
+  fs.readdir('data', function(err, files) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    var id = req.params.id;
+    if (id) {
+      // id 값이 있을 때
+      fs.readFile('data/' + id, 'utf8', function(err, data) {
+        if (err) {
+          console.log(err);
+          res.status(500).send('Internal Server Error');
+        }
+        res.render('view', {
+          topics: files,
+          title: id,
+          description: data
+        });
+      })
+    } else {
+      //id 값이 없을 때, /topic 으로 검색하고 들어왔을 때
+      res.render('view', {
+        topics: files,
+        title: 'Welcome',
+        description: 'Hello, Javascript for server.'
+      });
+    }
+  })
+});
+```
+
+- 대표 페이지로 가는 것이 불편 → 제목을 누르면 홈으로 가도록
+
+```
+h1
+	a(href='/topic') Server Side Javascript
+```
+
+- 글쓰기 화면으로 이동할 수 있는 링크를 제공 (new 글자를 누르면, form으로 가는 형태)
+
+```
+div
+	a(href='/topic/new') new
+```
+
+- new 를 클릭하면, form 으로 갈 수 있는데, 레이아웃이 동떨어져있는 것 같다.
+
+→ form 에도 view.jade 처럼 코드를 추가하고, 추가한 코드에 필요한 `topic` 을 보내줘야한다. new.jade 로!
+
+**(new.jade 파일)**
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1
+      a(href='/topic') Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+    article
+      form(action='/topic' method='post')
+        p
+          input(type='text' name='title' placeholder='title')
+        p
+          textarea(name='description')
+        p
+          input(type='submit')
+```
+
+**(`app_file.js` 파일)**
+
+```jsx
+app.get('/topic/new', function(req, res) {
+  fs.readdir('data', function(err, files) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    res.render('new', {
+      topics: files
+    })
+  });
+});
+```
+
+- new 에서 새로운 정보를 작성하면, success ! 화면으로 가는데, 이를 작성한 정보의 경로로 가도록 해보자
+
+**(`app_file.js` 파일)**
+
+→ `redirect` 를 사용했다.
+
+```jsx
+app.post('/topic', function(req, res) {
+  var title = req.body.title;
+  var description = req.body.description;
+  fs.writeFile('data/' + title, description, function(err) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } // 글을 잘 작성했는지 볼 수 있게, 경로로 보내준다.
+    // redirect 를 통해서 처리를 하고 나서, 사용자를 해당 경로로 다시 보내준다.
+    res.redirect('/topic/'+title);
+  });
+})
+```
+
+---
+
+# ★ 최종 코드 ★
+
+## `app_file.js` (서버파일)
+
+```jsx
+var express = require('express');
+var bodyParser = require('body-Parser');
+var fs = require('fs');
+var app = express();
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
+app.locals.pretty = true;
+
+app.set('views', './views_file');
+app.set('view engine', 'jade');
+
+app.get('/topic/new', function(req, res) {
+  fs.readdir('data', function(err, files) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    res.render('new', {
+      topics: files
+    })
+  });
+});
+// 하나의 라우터에 여러 경로를 합치는 과정 [ ] 안에 넣으면된다.
+// 중복되지 않는 부분을 합친다.
+app.get(['/topic', '/topic/:id'], function(req, res) {
+  fs.readdir('data', function(err, files) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    var id = req.params.id;
+    if (id) {
+      // id 값이 있을 때
+      fs.readFile('data/' + id, 'utf8', function(err, data) {
+        if (err) {
+          console.log(err);
+          res.status(500).send('Internal Server Error');
+        }
+        res.render('view', {
+          topics: files,
+          title: id,
+          description: data
+        });
+      })
+    } else {
+      //id 값이 없을 때, /topic 으로 검색하고 들어왔을 때
+      res.render('view', {
+        topics: files,
+        title: 'Welcome',
+        description: 'Hello, Javascript for server.'
+      });
+    }
+  })
+});
+
+// app.get('/topic/:id', function(req, res) {
+//   var id = req.params.id;
+//   fs.readdir('data', function(err, files) {
+//     if (err) {
+//       console.log(err);
+//       res.status(500).send('Internal Server Error');
+//     }
+//   })
+// });
+app.post('/topic', function(req, res) {
+  var title = req.body.title;
+  var description = req.body.description;
+  fs.writeFile('data/' + title, description, function(err) {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } // 글을 잘 작성했는지 볼 수 있게, 경로로 보내준다.
+    // redirect 를 통해서 처리를 하고 나서, 사용자를 해당 경로로 다시 보내준다.
+    res.redirect('/topic/'+title);
+  });
+})
+
+app.listen(3000, function() {
+  console.log('Connected, 3000 port!');
+})
+```
+
+## **`view.jade` 파일 (제일 처음 화면)**
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1
+      a(href='/topic') Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+    article
+      h2=title
+      =description
+    div
+      a(href='/topic/new') new
+```
+
+## `**new.jade` 파일 (사용자가 정보를 입력하는 화면)**
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1
+      a(href='/topic') Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+    article
+      form(action='/topic' method='post')
+        p
+          input(type='text' name='title' placeholder='title')
+        p
+          textarea(name='description')
+        p
+          input(type='submit')
+```
