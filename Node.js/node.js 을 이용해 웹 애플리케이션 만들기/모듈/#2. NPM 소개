@@ -1,0 +1,112 @@
+= Node Package Manager 의 약자
+
+NPM 을 어떻게 사용할까?
+
+기본적으로 깔려있는 모듈(Node.js의 모듈 , Javascript의 모듈 등)들을 여러 형태로 결합시켜서 새로운 모듈을 만들어 낼 수 있다. = 소프트웨어를 만들어내는 방법
+
+좋은 부품들이 있어야, 다양하게 결합함으로써, 좋은 모듈을 얻을 수 있다.
+
+여기에서는, 다른 사람들이 만든 모듈인 , NPM 을 사용하는 것을 배워볼 것이다.
+
+**'Node.js 의 앱스토어'**라고 보면 이해하기 편할 것이다.
+
+앱 스토어에 들어가서 원하는 것을 찾아서 설치하면 사용할 수 있는 것처럼,
+
+NPM 역시 같은 기능을 한다고 보면 된다.
+
+나의 프로젝트에서 편하게 사용할 수 있고, 쉽게 삭제할 수 있으며, 업그레이드 또한 가능하고, 의존성 관리(소프트웨어가 무수히 많아지면, 과부하가 걸릴 수 있는데, 이를 NPM을 통해서 의존성 관리를 할 수 있다.) 또한 할 수 있다.
+
+다른 개발을 할 때도, Node.js 의 여러가지 모듈을 사용함으로써, 다양한 개발에 접목시킬 수 있다.
+
+ 
+
+그렇다면, NPM을 어떻게 사용하는지 배워보자.
+
+[npm](https://www.npmjs.com/)
+
+방대한 양의 모듈들을 찾아볼 수 있고 활용할 수 있다.
+
+# 3. NPM 독립적인 앱 설치
+
+: NPM 을 사용해서, Node.js 를 만드는 데 사용해보자.
+
+독립적으로 사용할 수 있는 프로그램을 한 번 설치해보자.
+
+`uglify-js` 를 NPM 사이트에 검색하고, 다운받아보자.
+
+(못생기게 만드는 모듈)
+
+[uglify-js](https://www.npmjs.com/package/uglify-js)
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/9f5e033b-21b8-4503-8945-0ce8b0aa0eed/Untitled.png
+
+설치 방법에는 두 가지가 있다.
+
+1.
+
+```jsx
+npm install uglify-js -g
+```
+
+여기에서 `-g` 는 **글로벌**의 약자이다. **설치하는 프로젝트 외 전체 프로젝트에서** 사용할 수 있는 독립적인 기능을 하게 된다.
+
+2. 
+
+```jsx
+npm install uglify-js
+```
+
+여기에서는 **로컬**로 선언되는 구문이다. 패키지를 설치한 **프로젝트 안에서만** 사용할 수 있게 된다.
+
+이 중에서, 글로벌로 선언된 1번을 cmd 로 설치해보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/10d8c809-6bb5-4d90-9444-3be512759d3d/Untitled.png
+
+uglify-js 가 설치되었다는 문장이 나온다.
+
+이 컴퓨터의 어떤 디렉터리가 있던 간에, uglify-js 를 사용할 수 있다. (전역변수. 글로벌로 설치했기 때문에)
+
+설치한 uglify-js 를 사용해보자. pretty.js 를 만든다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/77717a2c-2ec2-49fa-8f0d-9580550d89bd/Untitled.png
+
+```jsx
+function hello(name){
+  console.log('Hi,'+name);
+}
+hello('Jihoon')
+```
+
+이를, node.js 로 'uglify-js' 를 통해서 실행해보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/f9f6a772-6b37-43c4-86e2-a29e297228ed/Untitled.png
+
+`uglifyjs pretty.js` 의 결과를 보면, 작성한 pretty.js 에서 가독성을 위해서 **띄어놓은 부분들과 줄바꿈이 다 붙어버린다는 것**을 확인할 수 있다. 
+
+uglify-js 메서드를 사용하는 이유는,
+
+코드의 내용이 많아지면, 비싸지고 무거워지는데, 이러한 경우에
+
+**필수적인 내용들을 제외한, 공백과 줄바꿈들을 줄일 수 있게 됨으로써**, 코드의 절약과 기능의 향상을 이루어 낼 수 있다.
+
+또한, `uglifyjs pretty.js -m` 을 실행시켜보면,
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6051be1f-89b2-43b9-8d62-3999da2ff0a5/Untitled.png
+
+기존에 들어갔던, `name` 대신에, 간편한 한 글자로 표현한 `o` 라는 것이 들어가있는 것을 확인할 수 있다.
+
+**m** 은, 짓이기다. 공백만을 없애는 것이 아니라, **이름을 바꿔도 상관이 없는 변수의 이름들을 한 글자의 간단한 문자로 바꿔주는 기능**이다.
+
+또한, `uglifyjs pretty.js -o pretty.min.js -m` 을 실행시켜보면,
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/0b7f44fe-9782-4167-a1a5-e93f9eeb3400/Untitled.png
+
+"uglifyjs 를 통해서 바꾼 pretty.js -m 의 결과를 pretty.min.js 로 저장한다는 의미이다."
+
+**(보통, uglify-js 의 기능이 용량을 최적화시키는 데 쓰이기 때문에, 바뀐 파일이름을 "기존의 파일이름 + min + js "로 파일 이름을 작성해서 파일의 이름만 보고서도, 최적화 시킨 파일이라는 것을 알 수 있도록 한다.)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/8008d104-10ce-44b4-884e-21bfa633001c/Untitled.png
+
+폴더로 가보면, pretty.min.js 파일이 생성된 것을 확인할 수 있다.
+
+해당 파일을 확인해보면, 모든 공백들과 줄바꿈이 없어지고, `name` 대신에 `o` 가 들어가 있는 것을 확인할 수 있다.
