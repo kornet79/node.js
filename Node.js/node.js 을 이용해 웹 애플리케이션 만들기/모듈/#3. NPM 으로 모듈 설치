@@ -1,0 +1,56 @@
+저번 시간에는, 다른 사람들이 만든 모듈을 통해서, 자신의 파일을 작성하는데 사용하는 시간을 가졌다.
+
+**underscore** 모듈을 이번 시간에 사용해 볼 것이다.
+
+[underscore](https://www.npmjs.com/package/underscore)
+
+NPM에 적혀있는 Underscore.js 의 홈페이지로 이동해서 사용방법에 대해서 알아본다.
+
+[Underscore.js](https://underscorejs.org/)
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/a53ac379-5c90-41ea-a9cc-a76ffff07702/Untitled.png
+
+Node.js 에서는, 
+
+```jsx
+npm install underscore
+```
+
+를 사용함으로써, 설치할 수 있다.
+
+이를 하기 전에, **다른 사람이 만든 패키지를 가져오기 위해서**는,
+
+`npm init` 을 먼저 사용함으로써, **우리가 사용하고 있는 패키지를 등록**해야한다.
+
+`npm init` 을 통해서, "package.json" 이라는 파일을 만들 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/93e29038-9c30-4bed-8e6c-280870d8a489/Untitled.png
+
+`npm init` 을 통해서, 등록할 자신의 package 에 대한 정보들을 적고 yes 를 누르면,
+
+새로운 파일인 package.json 이 생성된 것을 볼 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/4f15fe71-c5b9-430c-82fb-35c60f8f0374/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/1c197a80-429b-419e-a8de-ec0e7c244982/Untitled.png
+
+입력했던 정보들이 들어가있는 것을 확인할 수 있다.
+
+나중에, 내가 만든 소프트웨어를 NPM 에 등록함으로써, 다른 사람들 또한 나의 소프트웨어를 사용할 수 있게 된다.
+
+다시 본론으로 돌아와서, `npm install underscore --save`  를 실행시키면, underscore 이 정상적으로 깔리는 것을 볼 수 있다. `--save` 는 내 **package.json 파일에 undercore 모듈을 저장함**으로써, **package.json 파일이 있는 모든 파일에 underscore 모듈을 사용할 수 있다는 것을 의미**한다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/7e4faf48-7a4b-455a-9b70-f88dba8ed191/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/2f8137c9-aed6-4b1e-b424-b272ef17868c/Untitled.png
+
+해당 **underscore 모듈**이 정상적으로 깔린 것을 볼 수 있다.
+
+또한, package.js 파일에 해당 구문이 추가로 들어간 것을 볼 수 있다. ( --save 를 붙임으로써, 추가됨)
+
+**underscore 1.8.3** 버전에 의존하고 있다는 것을 의미한다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/5a84ea9c-a75a-413d-85d4-d0fdc33dfb8f/Untitled.png
+
+- **--save 를 사용하는 경우**는, 새로운 폴더에 **이 프로젝트를 다시 시작한다고 하더라도, underscore 모듈을 쉽게 가져올 수 있다**. **프로젝트에 반드시 필요하고 같이 다녀야한다면, 사용한다**.
+- **--save 를 사용하지 않은 경우**는, **소스코드에 넣을 필요는 없는데, 지금 당장 써야하는 경우**라면, --save 를 사용하지 않고 사용한다.
