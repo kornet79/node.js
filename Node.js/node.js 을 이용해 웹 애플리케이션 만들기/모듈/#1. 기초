@@ -1,0 +1,70 @@
+---노션---
+https://incredible-guan-388.notion.site/5f7ff66ec2744ffba4e8c70671c3a93b?pvs=4
+
+# 1. 기초
+
+**모듈 = 부품** 이라고 생각하면 편하다.
+
+지난 시간에 했었던 예제를 바탕으로 다시 공부해보자.
+
+- **`const http = require('http')` = http 라는 변수에, http 라는 모듈을 담았다.**
+
+→ 기본적인 웹 서버를 편하게 사용하기 위해서, Node.js 가 준비해둔 기능이다.
+
+→ `require` : 하단에 애플리케이션이 작동하기 위해서는, Node.js 에서 준비해둔 모듈(부품)이 요구된다. 'http' 라는 부품을 로드해서 사용할 수 있다.
+
+→ const 뒤에 있는 http 에 값을 반환하였다.
+
+→ `const` 한 번 할당이 되면, 다시 할당할 수 없기 때문에, **상수(Constant)**라고 볼 수 있다. (한 번 정하면 바뀌지 않는다.)
+
+Node.js 의 홈페이지에서 문서 - 제일 최근 버전 으로 들어가면, HTTP 를 볼 수 있다.
+
+HTTP 모듈에 대한 사용설명서라고 보면 된다.
+
+위의 예시 코드에서 사용한, createServer코드가 있는지 확인해보자.
+
+[Node.js v13.12.0 Documentation](https://nodejs.org/dist/latest-v13.x/docs/api/http.html#http_http_createserver_options_requestlistener)
+
+`createServer` 라는 함수 or 메서드에 대한 정보를 확인할 수 있다.
+
+모듈이라는 것이 존재하고, 모듈은 부품이다.
+
+모듈이라는 부품을 사용할 때에는,`require`을 이용한다.
+
+서버를 만드는 데 필요한, 부품들을 제공해주는 데  이를 어떻게 사용하는지 사용설명서는 홈페이지를 통해서 확인할 수 있다.
+
+(추가적으로 사용설명서에 접근하는 방법에 대한 연습을 해보자)
+
+만약, OS 라는 모듈의, platform() 이라는 함수 or 메서드를 알고 싶다면,
+
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/b8417c9a-61e5-4511-ae3a-b16671632cab/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/7ddf6965-bf7d-4138-aef3-66d76d945224/Untitled.png
+
+을 통해서 `os.platform()` 에 대해서 알아볼 수 있다.
+
+이를 직접 파일을 만들어서 적용해보자.
+
+module.js 파일을 만들어보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/25be5377-48b0-4939-84d5-952eb38a6038/Untitled.png
+
+```jsx
+var o = require('os');
+// os 모듈을 가져온다.
+console.log(o.platform());
+// os 모듈의 platform 메서드를 실행한다.
+```
+
+만든 module.js 를 node 로 실행해보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/a0164510-ca3c-4962-885e-d6031dfc4581/Untitled.png
+
+`win32` 라는 값이 나온다.
+
+⇒ **Node.js 에서 제공해주는** 모듈들을 사용해보았다.
+
+(이러한 모듈은 Node.js 에서만 사용할 수 있다.)
+
+만약, javascript의 모듈이라면, javascript 를 사용하는 곳이라면 사용할 수 있다.
