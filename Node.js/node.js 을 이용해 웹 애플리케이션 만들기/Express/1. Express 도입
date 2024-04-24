@@ -1,0 +1,363 @@
+---노션---
+https://incredible-guan-388.notion.site/Express-fc5ed037678b43e29a6ae4717bb40671?pvs=74
+
+# 1. Express 도입
+
+초반에 했었던, 서버 작성파일을 가져와서 분석해보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/0555cc9e-3eb1-486f-9b02-d1fd37f4e1e0/Untitled.png
+
+```jsx
+const http = require('http');
+// http 모듈을 사용하기 위해서 require 로 가져오고, http 변수에 담는다.
+
+const hostname = '127.0.0.1';
+// IP 는, 어떤 컴퓨터를 식별하는 식별자이다.
+// 127.0.0.1 IP 를 통해서 들어온 사용자만 서버로 보내준다.
+const port = 3000;
+// 컴퓨터에 설치된 여러 서버들 중에서 나는 3000번 포트를 웹 서버로사용하겠다.
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World');
+});
+// http 모듈에 있는 createServer 함수를 호출한다.
+// 이를 server 변수에 담는다.
+// 두 개의 인자를 받는데, req 인자는 요청과 관련된 것이고, res 인자는 응답과 관련된 객체이다.
+// 요청한 사용자에게 응답할 것인가는, 두 번째 매개변수인 res 를 통해서 판단한다.
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+// createServer 가 만든 서버를 listen 한다.
+// listen 메서드는 콜백으로 비동기적으로 작동한다.
+
+// 위에 작성된 코드를 익명함수로 사용함으로써, 축약한 형태이다.
+var server = http.createServer(function(req, res){
+	res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World');
+});
+server.listen(port, hostname, function(){
+	console.log(`Server running at http://${hostname}:${port}/`);
+});
+```
+
+이러한 방식은 굉장히 편하지만, 더 적은 코드로 더 많은 일들을 해줄 수 있는 프레임워크들이 존재한다.
+
+노드를 직접 작성해서 웹을 만들면 좋겠지만, 이미 만들어진 프레임워크를 통해서 작성하는 것이 더 편하고 효율적이다.
+
+여기에서는, Express 라는 웹 프레임워크를 활용함으로써, 웹 서버 개발을 다뤄볼 것이다.
+
+# 2. Express 설치
+
+[Express - Node.js 웹 애플리케이션 프레임워크](https://expressjs.com/ko/)
+
+내가 express 를 사용할 디렉터리로 이동해서 설치하거나, 없다면 디렉터리를 만들고, 설치한다.
+
+1.
+
+```jsx
+$ mkdir myapp
+$ cd myapp
+```
+
+2.
+
+```jsx
+$ npm init
+```
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d700d2db-6d4c-451b-8e1f-f311c71a54a3/Untitled.png
+
+**(package.json 파일에 'dependencies' 항목에 express 가 추가된 것을 확인할 수 있다.)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/16263dd1-187f-4ebc-86b7-7942e63453bd/Untitled.png
+
+3. 
+
+```jsx
+$ npm install express --save
+```
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/b8644490-a0f6-4030-9fe0-67dbc7bd6211/Untitled.png
+
+# 3. Express를 이용한 간단한 웹앱 만들기
+
+[Express "Hello World" 예제](https://expressjs.com/ko/starter/hello-world.html)
+
+`app.js` 파일을 만든다. 해당 파일은, 메인 애플리케이션. 가장 최초의 진입점이 되는 애플리케이션이 될 것이다. ("main 애플리케이션" 이라고 부른다.)  관습적으로, app.js 라는 이름을 많이 사용한다.
+
+```jsx
+var express = require('express');
+// express 모듈을 express 변수로 받아온다.
+var app = express();
+// express를 함수처럼 사용할 수 있다. 이를 통해서 애플리케이션(서버)을 만든다.
+
+app.get('/',function(req, res){
+  res.send('Hello! Home Page');
+});
+// 보통, 웹에 접근할 때의 방식은 get 방식을 이용하기 때문에, get 메서드를 호출한다.
+// '/'를 통해서 접근한 사용자에게 function 에 해당하는 부분을 보여준다.
+// get 방식에서의 function 의 형태는 정해져있다. (req,res) 형식으로 이루어져있다.
+// req  -> 사용자의 요청을 받는 객체를 가지고 있는 매개변수
+// res -> 사용자가 요청을 사항에 대한 응답에 대한 객체를 가지고 있는 매개변수
+// 사용자에게 응답을 해줄 때는, res를 활용해야한다.
+// res.send()는, res의 인자로 전달된 값을 보내주는 메서드이다.
+// 이러한 get의 기능을 route(라우트), 라우팅이라고 부른다.
+
+app.get('/login',function(req,res){
+  res.send('<h1>Login Please!</h1>')
+});
+// /login 을 통해서 접근한 사용자에게는, Login Please를 보여준다.
+// get 은, 라우터이다.
+
+app.listen(3000,function(){
+  console.log('Connected 3000 port!')
+});
+// app 의 메서드 중에서, listen을 사용하여 포트번호를 설정하고 콜백함수로 console.log를 찍는다.
+```
+
+해당 파일을 node js 로 실행해보고, 포트번호에 맞는 웹사이트로 들어가보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6d09fa74-6ace-4f0a-b82d-14840422cceb/Untitled.png
+
+실행하면, `app.listen` 에 적은 `console.log('Connected 3000 port!')` 가 나오면서, 해당 서버가 작동한다.
+
+- ctrl + c 를 누르면, 서버와의 커넥션이 끊어진다.
+
+`'/'` 를 통해서 접근했을 때, 나오는 `Hello! Home Page` 가 나오는 것을 볼 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/98059860-e9c1-4a9c-abe6-5fc097e1c2c4/Untitled.png
+
+또한, `'/login'` 을 통해서, 접근할 때, 나오는 `Login Please!` 또한 확인할 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/fa241316-97dc-4af3-84c5-8e81636157d7/Untitled.png
+
+이처럼, 사용자가 `get` 방식으로 해당 서버에 접근하면, `res.send()` 로 보여주는 과정을 보여준다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/405af614-dbc4-4d3c-a713-80c3f4c63024/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6265792f-e367-46bb-b6fa-0e3ffb0b4d73/Untitled.png
+
+위 예시에서, **Router** 는 `get.('/')` 와 `get.('/login')` 에 해당하고 **Controller** 는, 해당 라우터로 들어갔을 때, 나오는 값인 `send('Hello Home Page')` 와 `send('Login Please')` 를 의미한다.
+
+# 4. 연결성
+
+인간이 쓰는 언어에서, 단어는 의미를 만들어내는 역할을 한다.
+
+하나의 단어는 하나의 의미를 가지고 있다.
+
+사회가 발전하는 과정에서 좀 더 섬세한 의미들이 필요해지기 시작하고, 하나의 단어가 여러가지 의미를 가지기 시작한다.
+
+유사하지만, 다양한 의미들을 가지게 된다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/706b1c3b-827c-4220-8b86-81b1d61f8cea/Untitled.png
+
+또한, 단어와 단어를 합쳐서 새로운 의미를 가지는 것을 만들어내는데, 이를 문장이라고 한다.
+
+예를 들어, 명사를 10개 알고 있다면, 보통 10개의 의미를 알 수 있다. (상당히 제한적)
+
+어순에 따라서, 새로운 의미를 만드는 문법을 가지고 있는데, 10개의 명사와 10개의 동사를 같이 사용하면, 20개의 단어로 100개의 의미를 만들어낼 수 있다.
+
+또한, 목적어도 붙여보면, 20개의 단어로 1000개의 의미를 만들어낼 수 있다.
+
+전치사, 목적어 등등의 문법들이 계속 추가되면 적은 단어를 가지고서 10000개, 100000개 의 의미를 만들어낼 수 있다.
+
+**무엇인가를 결합하고, 조합하는 것이 얼마나 대단한 일이라는 것**을 설명하기 위해서 사용해보았다.
+
+자바스크립트와 노드JS 를 배웠는데, 이 두가지의 연결점은 무엇일까?
+
+또, 어떻게 해야 결합하고 조합해서 사용할 수 있을까?
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/afb36437-6bd2-4a94-a916-925dd60fcdfe/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/b54c0d18-4a36-40a9-9157-a502a4e8f2ff/Untitled.png
+
+노드 JS는, 기본적으로 파일을 읽고쓰는(FS) 네트워크를 통해서 작업할 수 있는(HTTP) 운영체제를 제어할 수 있는(OS) 기능들을 기본적으로 제공한다.
+
+그렇다면, 노드 JS 가 제공하는 기능들을 자바스크립트라는 프로그래밍 언어의 문법에 맞게 결합해서 개발자가 의도한 프로그램을 만드는 것이다.
+
+처음 프로그램을 만드는 것은 힘들지만, 한 번 만들어놓으면 재사용이 가능하기 때문에 굉장히 쉽다.
+
+또한 유사한 관계로 모듈 - NPM 을 들 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/0ee7a27b-451b-4ef6-b078-f7a21b3856a7/Untitled.png
+
+ 
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/c56e3ffc-8b7e-4e32-a622-605a21a91757/Untitled.png
+
+Express, Underscore, Jade 라는 다양한 모듈 등이 있다.
+
+이를 NPM을 통해서, 모듈(컴퓨터에서 부품)들을 애플리케이션에 담아서 다양한 형태의 애플리케이션을 만들 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/3cb1ae70-c336-4930-ab9a-645e082bc27b/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/856840ba-aca9-48e3-b5da-4232e8018e99/Untitled.png
+
+사용자의 접속을, 요청을 어떠한 Controller 에 전달해줄지 정하는, 연결자의 역할을 하는 'Router' 
+
+Controller 는, 회원가입 / 홈페이지 / 에러화면 등 Router에 의해서 연결되어지는 것들이다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6bb028c3-b763-4783-8487-8a229647737b/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/e6d2a4c1-1954-43a2-a3dd-06525ed1d6ce/Untitled.png
+
+기초를 탄탄하게 다져야 추후에 어려운 문법에서 수월하게 할 수 있다.
+
+기초를 탄탄하게 다지자.
+
+# 5. Express, 정적 파일을 서비스하는 법
+
+[Express에서 정적 파일 제공](https://expressjs.com/ko/starter/static-files.html)
+
+계속해서 똑같이 보이는 것이 '정적파일'이다.
+
+정적인 파일을 사용하고 싶다면, 해당 코드를 추가하면 된다.
+
+```jsx
+app.use(express.static('public'));
+```
+
+이 과정을 진행하기전, 작업폴더에 'public'이라는 폴더를 만들고, 서버에 나오고자 하는 이미지를 폴더에 넣은 상태가 되어 있어야한다.
+
+mkdir public → 이미지 다운받아서 폴더에 넣기
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/51936a45-e2ea-4e82-a22f-3ead3d8fa6c4/Untitled.png
+
+다했다면, 다시 본론으로 돌아가자.
+
+- 해당 public 폴더에 Nodejs.jpg 사진파일과 mynode.txt를 만들었다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/31308e69-c90b-4a23-9a48-f8e85eb543e3/Untitled.png
+
+- Nodejs.jpg 사진 파일은, [localhost:3000/Nodejs.jpg](http://localhost:3000/Nodejs.jpg) 로 가져올 수 있다.
+- mynode.txt 텍스트 파일은, [localhost:3000/mynode.txt](http://localhost:3000/mynode.txt) 로 가져올 수 있다.
+
+```jsx
+var express = require('express');
+var app = express();
+
+// 정적인 파일의 위치를 지정하는 기능. public 이라는 디렉터리를 정적인 파일이 위치한 디렉터리로 하고 싶다.
+// 관습적으로 이름은, public 으로 한다.
+app.use(express.static('public'));
+
+app.get('/',function(req, res){
+  res.send('Hello! Home Page');
+});
+// 새로운 라우트 '/route' 를 만들고, 해당 컨트롤러에 html에서 img src 를 적는 방법을 사용해서,
+// '/route' 로 접속할 때, 바로 나올 수 있도록 할 수도 있다.
+app.get('/route',function(req,res){
+  res.send('Hello! Router, <img src="/Nodejs.jpg">')
+})
+app.get('/login',function(req,res){
+  res.send('<h1>Login Please!</h1>')
+});
+
+app.listen(3000,function(){
+  console.log('Conneted 3000 port!')
+});
+
+```
+
+# 6. Express, 웹 페이지를 표현하는 방법 (정적/동적)
+
+## **정적인 파일을 전달하는 방법**
+
+: 한 번 만들어지면 언제나 똑같은 html 을 만든다.
+
+- `app.use(express.static('public'));`
+- **내용을 변경하면 바로 변경이 적용된다.** (app.js 를 껐다가 킬 필요가 없다.)
+- public 폴더 아래에, static.html 을 만든다.
+
+**(static.html)**
+
+```html
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    Hello, Static!
+  </body>
+</html>
+```
+
+- 해당 html 파일은, [localhost:3000/static.html](http://localhost:3000/static.html) 로 불러올 수 있다. (위에서 말한 것처럼, **정적인 파일은 수정을 하면 바로 수정이 적용되기 때문에, app.js 를 껐다가 킬 필요가 없다**.)
+- **그렇기 때문에, 코드를 작성하는 데 있어서, 굉장히 편하다. 더 많이 사용하고 선호한다.**
+
+## **동적인 파일을 전달하는 방법**
+
+- **내용을 변경하면, 바로 변경이 안된다.** (app.js 를 껐다가 켜야한다.)
+- **번거로운 일들이 생기기 때문에 많이 사용하지는 않는다.**
+- 하지만, 프로그래밍으로 웹 페이지를 만든다면, 동적인 파일로 작성하는 것이 훨씬 더 좋다.
+
+(예시) 
+
+```html
+<li>Coding</li>
+<li>Coding</li>
+<li>Coding</li>
+<li>Coding</li>
+..... x 10000 번
+```
+
+만약 이와 같은 상황에 놓인다면, 정적으로 파일을 직접 입력하는 거는 한계가 있다.
+
+이런 상황에서는, 프로그래밍 언어를 통해서 웹 페이지를 만드는 '**동적'**방법이 훨씬 더 효율적이다.
+
+```jsx
+app.get('/dynamic',function(req,res){
+  var time = Date();
+  var lis = '';
+  for(var i=0;i<10;i++){
+    lis = lis + '<li>coding</li>';
+  }
+  var output = `
+  <!DOCTYPE html>
+  <html lang="en" dir="ltr">
+    <head>
+      <meta charset="utf-8">
+      <title></title>
+    </head>
+    <body>
+      Hello, Dynamic!
+      <ul>
+      ${lis}
+      </ul>
+      ${time}
+    </body>
+  </html>`
+  res.send(output);
+});
+```
+
+해당 코드를 통해서, `<li>coding</li>` 라는 구문을 100번. 1000번 찍어내야한다고 해도, for 문을 통해서 쉽게 작성할 수 있다.
+
+( `` `` 안에서, html 에 변수명을 입력하기 위해서는 `${변수명}` 을 이용해서, 코드를 작성한다.)
+
+- app.js 에 해당 코드를 추가한다. (html 을 그대로 적을 때에는, `` `` 기호로 덮어줘야 제대로 인식한다.) → 1번 왼쪽 특수문자
+
+```jsx
+app.get('/dynamic',function(req,res){
+  var output = `<!DOCTYPE html>
+  <html lang="en" dir="ltr">
+    <head>
+      <meta charset="utf-8">
+      <title></title>
+    </head>
+    <body>
+      Hello, Dynamic!
+    </body>
+  </html>`
+  res.send(output);
+});
+// html을 그대로 붙일 때는, `` 기호를 사용한다. (1번 왼쪽 특수문자)
+```
+
+### 이렇게 정적인 파일을 전달하는 것과 동적인 파일을 전달하는 두 방법 모두 장단점을 뚜렷하게 가지고 있다. 이러한 점들을 보완하기 위해서 개발자들이 고안한 것이 바로 "템플릿"이다.
+
+다음 파트에서는 '템플릿'에 대해서 배워보도록 하자.
