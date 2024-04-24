@@ -1,0 +1,269 @@
+---노션---
+https://incredible-guan-388.notion.site/Express-POST-fe9992df9eab43698f965badb8c968f6?pvs=74
+
+# 1. POST 방식을 이용한 정보의 전달(1)
+
+서버와 웹 브라우저가 상호작용하는 과정으로 대표적인 2가지 방법이 있다.
+
+GET 방식과 POST 방식이다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d343d493-5c48-4dd2-92ef-445951614b28/Untitled.png
+
+기본적으로 웹 브라우저에 접속해서 **정보를 가져오는 것**은 **GET**
+
+지금까지 많이 해왔던, 과정들이 거의 대부분 GET 방식이였다.
+
+웹 애플리케이션으로 접속해서 사용자가 정보를 가져오는 것. **GET**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6a58f5cd-a879-46bd-ae01-bb25864118ed/Untitled.png
+
+특정한 쿼리스트링을 통해서, 사용자가 원하는 정보를 가져오는 것도. **GET**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/089966d5-4f5b-4c63-94f8-d965a4a6c26e/Untitled.png
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d57726cf-4a07-4357-b1d4-42d6065763ca/Untitled.png
+
+이와는 다르게, 우편물을 보낸다. 어떠한 내용을 전송한다. 등
+
+사용자의 정보를 서버로 전송하는 등(**로그인** 시, 아이디와 패스워드를 서버로 전송)(**글을 작성**하는 것 또한 서버로 글 내용을 전송하는 것) **어떠한 정보를 보내거나 전송하는 것**은 **POST**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/81261ae7-2481-4837-9c78-8504185f1b3f/Untitled.png
+
+이후에는, POST 방식을 어떻게 할 수 있는지 알아볼 것이다. 
+
+# 2. POST 방식을 이용한 정보의 전달(2) : form
+
+사용자가 **form** 이라는 주소로 접속했을 때, 제출양식이 나오도록 해보자.
+
+```jsx
+app.get('/form',function(req,res){
+  res.render('form');
+});
+```
+
+서버로 접근했을 때 나오는 페이지를 만들기 위해서, `form.jade` 파일을 만들어서 html 을 작성해본다.
+
+**(form.jade 내용)**
+
+```html
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    form(action='/form_receiver' method='get')
+      p
+        input(type='text' name='title')
+      p
+        textarea(name='description')
+      p
+        input(type='submit')
+```
+
+(결과 HTML 출력 화면)
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/181d1fe7-2b80-487b-911f-ecbb7f86d7c9/Untitled.png
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <form action="/form_receiver" method="get">
+      <p>
+        <input type="text" name="title">
+      </p>
+      <p>
+        <textarea name="description"></textarea>
+      </p>
+      <p>
+        <input type="submit">
+      </p>
+    </form>
+  </body>
+</html>
+```
+
+- 태그에 속성을 넣어주고 싶다면, **`( )`** 형식으로 넣어주면 가능하다.
+- `meta(charset='utf-8')`
+
+→ utf-8 방식으로 만들어졌다는 것을 보여줌
+
+- `form(action='/form_receiver' method='get')`
+
+→ 해당 form 내용을 /form_receiver 로 보낸다.
+
+- `input(type='text' name='title')`
+
+→ 사용자가 입력할 수 있는 입력창을 만든다. 해당 창의 이름은 **title** 이다.
+
+- `textarea(name='description')`
+
+→ 사용자가 여러줄을 입력할 수 있는 입력창을 만든다. 해당 창의 이름은 **description** 이다.
+
+- `input(type='submit')`
+
+→ 제출할 수 있는 버튼을 만든다.
+
+제출 버튼을 누르면, 에러가 나오면서, form_receiver 를 찾을 수 없다는 문구가 나온다.
+
+여기에서 주목할 점은 바로 URL 인데, 
+
+`title input` 에 입력했던, **title TEST** 와 `description textarea`에 입력했던, **description TEST** 가 쿼리스트링으로 나온다는 것을 볼 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/abd78626-a9df-442f-96d6-c675ab91e6d3/Untitled.png
+
+아직 정보를 전달하는 서버가 만들어지지 않았기에, 서버를 만든다.
+
+또한, 쿼리스트링에 사용자가 입력한 값이 들어가는 것을 확인할 수 있기 때문에, 입력내용을 화면에 띄우도록 코드를 작성해보자.
+
+**(form_receiver 생성)**
+
+```jsx
+app.get('/form_receiver',function(req,res){
+  var title = req.query.title;
+  var description = req.query.description;
+  res.send(title+','+description);
+});
+```
+
+코드를 통해서 쿼리를 통해서 정보를 받아올 수 있다.
+
+**(GET 으로 했을 때, 나오는 화면)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/c95400cd-725e-4c82-beaf-361f8927b757/Untitled.png
+
+`form` 태그에서 추가적으로 입력한 `method='get'` 방식은 써도 안 써도 GET 방식으로 접근하기 때문에 상관이없지만,
+
+만약, POST 방식으로 다루고 싶다면, `method='post'` 를 작성해줘야 한다.
+
+post 로 변경 후, 제출 버튼을 다시 눌러보면 
+
+(method = 'post' 이었을 때, 나오는 화면)
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/773b2238-727d-435f-b73f-bfbd8ebd299c/Untitled.png
+
+URL 에 추가적인 쿼리스트링이 붙지 않는다는 것을 확인할 수 있다.
+
+정리하자면,
+
+**GET 방식 → URL 에 쿼리스트링이 붙는다. (사용자가 입력한 값으로)**
+
+**POST 방식 →  URL 에 쿼리스트링이 붙지 않는다.**
+
+그렇다면, URL 을 통해서 정보를 보내지 않는 POST 방식은 어떻게 정보를 보내는 것일까?
+
+# 3. POST 방식을 이용한 정보의 전달(3) : POST
+
+위에서 post 방식으로 접근하면, 
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/773b2238-727d-435f-b73f-bfbd8ebd299c/Untitled.png
+
+해당 화면이 나온다. 즉 어떠한 Route 에도 걸리지 않았다는 것을 의미한다.
+
+그렇기에 `app.js` 에서 post 방식으로 접근할 때 들어갈 경로를 새로 만들어줘야 한다.
+
+**(POST 방식으로 접근할 때, 경로)**
+
+```jsx
+app.post('/form_receiver',function(req,res){
+  var title = req.body.title;
+  var description = req.body.description;
+  res.send(title+','+description);
+});
+```
+
+`app.get` 대신 [`app.post`](http://app.post) 가 들어간 것을 볼 수 잇다.
+
+(from.jade 파일에 method 를 변경해야 진행이 가능하다.)
+
+이렇게 작성하고 페이지를 실행시키면,  에러가 발생한다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/e7f69c5e-b107-46c0-b77c-d23f8b25e1c5/Untitled.png
+
+에러가 발생한 이유는, 
+
+```jsx
+app.post('/form_receiver',function(req,res){
+  var title = req.body.title;
+  var description = req.body.description;
+  res.send(title+','+description);
+});
+```
+
+`req` 라는 객체가 `body` 라는 객체를 가지고 있지 않기 때문에, 에러가 발생했다.
+
+ 
+
+해당 사이트를 참고해보자.
+
+[4.x API](https://expressjs.com/ko/4x/api.html#req.body)
+
+**body-parser** 라는 모듈을 설치해야, `req` 에 `body` 를 담아서 사용할 수 있다.
+
+```html
+npm install body-parser --save
+```
+
+로 설치하고,
+
+```jsx
+var bodyParser = require('body-parser')
+```
+
+를 `app.js` 적어줌으로써, 모듈을 사용할 수 있게 되었다.
+
+또한, app.use 로 모듈을 실행시켜준다.
+
+```jsx
+app.use(bodyParser.urlencoded({ extended: false}))
+```
+
+작성해주고, 실행시켜보면
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/b2e36a7f-cbdc-4917-99d5-f4b565193c2b/Untitled.png
+
+POST 로 전송한 사용자의 값들을 정상적으로 받을 수 있게 되었다.
+
+정리를 해보면,
+
+**GET 방식** → GET 방식으로 사용자의 정보를 전송하면, `app.get` 의 형태로 작성된 `route` 에 들어가게 된다. 이후에, `URL` 에 사용자가 입력한 정보들이 **쿼리스트링 형식**으로 나오게 되고, 이를 `req-query-title` 식으로 가져오는 것이다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/c95400cd-725e-4c82-beaf-361f8927b757/Untitled.png
+
+**POST 방식** → `req.body.title` 의 형식으로 가져오는데, `req` 객체에는 `body`라는 객체가 없기 때문에, **body-praser** 라는 모듈을 통해서, 애플리케이션으로 들어오는 모든 정보들을 **body-praser** 확장기능으로 통과시키고 할당된 경로로 배정해준다.
+
+사용자가 전송한 이름이 `title` 이라면, `body`라는 객체에 `title` 이란 프로퍼티를 만들고 값을 넣어서 사용자에게 제공해주는 것으로 이해하면 된다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/05427916-41c4-4c38-8202-e6243084e83d/Untitled.png
+
+# 4. POST 방식을 이용한 정보의 전달(4) : GET 과 POST 용도
+
+> 언제 **POST** 를 사용하고, 언제 **GET** 을 사용할까?
+> 
+
+언제 사용하는 지를 파악하기 위해서는 GET과 POST 에 대해서 알아야한다.
+
+`GET` 방식은, 보통 어떠한 링크를 클릭했을 때, 정보를 **주소(URL)를  통해서** 나타낼 때 사용한다.
+
+반면 `POST` 방식은, 보통 사용자 자신이 가지고 있는 생각이나 정보를 입력할 때 사용한다. **URL** 을 통해서 정보를 교환하는 것이 아니라, 우리 **눈에는 보이지 않는 방식**으로 정보를 다뤄서 보여준다. 
+
+그렇기 때문에, **body-praser** 라는 미들웨어를 설치해서 해당 정보를 처리해줘야 정보를 확인할 수 있다.
+
+따라서,
+
+**GET 방식**은, URL 에 정보가 쿼리스트링으로 담겨질 때 사용하기 좋고, 기본적으로 express 에서 제공해주기 때문에 사용하기 편하다.
+
+하지만, 보안적인 측면에서 URL 상에 개인정보가 들어가는 것이기 때문에, 보안성은 떨어진다.
+
+**POST 방식**은, URL 을 통해서 정보가 전해지는 것이 아니기 때문에 상대적으로 보안성이 뛰어나고,
+
+(완벽한 보안성을 위해서는 **SSL/HTTPS** 등을 이용해야함)
+
+express 에서 기본적으로 제공해주지 않고, 추가적으로 body-praser를 설치해야하는 번거로움이 있다.
+
+또한, 방대한 양의 정보를 전달할 때, URL 상으로 보여주는 것은 한계가 있기 떄문에,
+
+대량의 정보를 전송할 때는 POST 방식이 좋다. (URL 이 길어지면 웹이 거절할 수도 있기 때문에)
