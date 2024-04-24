@@ -1,0 +1,278 @@
+---노션---
+https://incredible-guan-388.notion.site/Express-2e3278d09f654a92bf244fe9461c7362?pvs=74
+
+# 1. Express, 템플릿 엔진 소개
+
+정적인 파일을 전달하는 방법의 장점과 동적인 파일을 전달하는 방법의 장점을 더해서 만든 것이, 바로 "**템플릿 엔진**"이다.
+
+아래의 사진을 살펴보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d5f435eb-763a-4d1f-9384-5804faa0c231/Untitled.png
+
+앞으로 계속해서 배울, 템플릿 엔진 중에서, Jade 라는 방법을 활용해서 html 을 적은 방식이다.
+
+인터넷 브라우저 상에서 볼 수 있는 (F12) html 파일이 왼쪽이고,
+
+템플릿 엔진 중에서 Jade 라는 방법을 활용해서 작성한 파일이 오른쪽이다.
+
+- 각 줄 마다 시작하는 태그 끝나는 태그 중에서 하나만 작성
+
+→ `<html></html>` 등을 `html` 로 작성
+
+- html 의 형식에서, 동적인 방식으로도 작성이 가능 (`for문`)
+
+→ 정적 파일 + 동적 파일  같이 표현함.
+
+구체적인 문법은, 이후에 있는 파트에서 다뤄보도록 하자.
+
+# 2. Express, 템플릿 엔진 사용법
+
+**(템플릿 엔진 사용법)**
+
+[Express와 함께 템플리트 엔진 사용](https://expressjs.com/ko/guide/using-template-engines.html)
+
+영상을 촬영했을 때에는,  jade 로 나와있지만, 현재는 pug 로 변경이 되어있다.
+
+일단, 강의에 따라서, jade 를 따라가보도록 하자.
+
+```jsx
+$ npm install jade --save
+```
+
+jade 템플릿을 설치하고, 해당 코드를 app.js 파일에 적어야 사용이 가능하다.
+
+```jsx
+app.set('view engine', 'jade');
+// view engine 은 템플릿 엔진을 의미한다. jade 라는 템플릿 엔진을 세팅한다.
+// 설치한 jade 와 express 를 연결하는 코드
+app.set('views','./views')
+// app.set('디렉터리 명', '디렉터리 경로')
+// views라는 디렉터리를 만들어야한다.
+// 앞으로 jade 파일은 views 폴더에 넣어서 보관한다.
+// 만약, views 라는 명 말고 다른 명으로 해도 상관없다. templates 등
+// 하지만, 명을 바꾸면, ./templates 식으로 입력해야한다.
+```
+
+이렇게 세팅을 해줘야, **템플릿 엔진으로 jade 를 세팅**하고, 
+
+views 라는 **jade 파일을 앞으로 저장할 디렉터리를 적어줌으로써, 경로를 설정**해준다.
+
+(디렉터리 명을 다르게 할 때는, 코드를 변경해줘야 한다.)
+
+이제 세팅은 되었고, `app.js` 코드에 새로운 rotuer 를 만들어보자.
+
+`'/template'` 을 통해서 들어온 사용자에게`temp`(views 디렉터리 하위에 있는 파일명)를 전송하는 코드이다.
+
+여기에서 주목해야할 부분은, 기존에 `res.send()`  로 보내던 부분이, `res.render()` 로 변경된 것을 확인해야한다. 
+
+```jsx
+app.get('/template',function(req,res){
+  res.render('temp');
+});
+// /template 으로 들어온 사용자에게, temp 를 전송한다.
+// 템플릿 엔진을 이용할 때는, .send 가 아닌, .render 를 이용해야한다.
+```
+
+해당 app.js 를 실행했을 때, (node app.js) 
+
+**('template'로 접근했을 때 화면)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/a8643916-cb3e-4f57-a3d7-79c791a43af1/Untitled.png
+
+아무것도 나오지 않는 빈 화면을 볼 수 있다.
+
+페이지 소스로 들어가보자.
+
+**('/template' 로 접근했을 때, 페이지 소스)**
+
+: 접속 시, 빈 화면으로 보이지만 페이지 소스로 들어가면 `temp.jade` 에 적었던 내용이 들어간 것을 확인할 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/dcbebff9-8e30-4731-a816-dd0bc9dd907e/Untitled.png
+
+이렇게, **템플릿 엔진을 다운**받고, 
+
+```jsx
+npm install jade --save
+```
+
+ **세팅**하고,
+
+```jsx
+app.set('view engine','jade')
+app.set('views','./view')
+// 파일명 views , 경로 ./view
+```
+
+ **간단하게 적용**해보았다.
+
+```jsx
+app.get('/template',function(req,res){
+	res.render('temp');
+});
+```
+
+# 3. Express, 템플릿 엔진, Jade 문법
+
+**(Jade 템플릿의 사용방법)**
+
+[Jade - Template Engine](http://jade-lang.com/)
+
+위에서 사용한 템플릿 엔진인, Jade 를 간단하게 알아보자.
+
+(기본적인 html 표기방법)
+
+**들여쓰기**를 해서, 작성하면 **html 안에 body 태그가 들어가게 된다**.
+
+```jsx
+html
+  body
+```
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/81ea07a1-3949-4e84-ae84-414b755ad3a3/Untitled.png
+
+> **(여기서 잠깐!!)**
+> 
+
+만약, 해당 코드처럼 나왔을 때, 이쁘게 바꾸고 싶은데 어떻게 해야할 지 모르겠다...
+
+싶은 생각이 들면 지금 작업하는 과정에 대해서 생각해본다.
+
+"지금 하고 있는 거는 'jade'...'express'....코드를 이쁘게 보이게 하고 싶다..."
+
+→ jade express code pretty 정도로 구글링을 해보자.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/98db036f-9ae3-48a7-a8ee-e414572b06f5/Untitled.png
+
+[How can I get Express to output nicely formatted HTML?](https://stackoverflow.com/questions/5276892/how-can-i-get-express-to-output-nicely-formatted-html)
+
+제일 상위에 나오는 사이트를 들어가서 확인해보면, 코드를 이쁘게 보이게 할 수 있는 방법에 대한 설명이 나오고, 이를 참고하면 된다.
+
+```jsx
+app.locals.pretty = true;
+// jade로 작성한 코드를 이쁘게 보이게 하는 코드
+```
+
+를 app.js 에 넣어보면 바뀌는 것을 확인할 수 있다.
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/64a2601d-f1c3-4e7c-989e-048420ed2158/Untitled.png
+
+**다시 본론으로 돌아와서**
+
+temp.jade 파일에 해당 코드를 입력해보고 확인해보자.
+
+```jsx
+html
+  head
+  body
+  h1 Hello Jade
+```
+
+이 코드의 결과는,
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/aceb1b4d-896c-4144-a3a5-8cfd19879aed/Untitled.png
+
+이러한 페이지소스가 나오는 것을 확인할 수 있고,
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/6bce4f30-7e06-4ad8-9e71-420eb742a7c3/Untitled.png
+
+해당 파일에 `h1` 으로 적은, `Hello Jade` 텍스트도 정상적으로 나온다는 것을 확인할 수 있다.
+
+이런 식으로 작성해서, 해당 코드를 입력해보자.
+
+**(temp.jade)**
+
+```jsx
+html
+  head
+    title= title
+  body
+  h1 Hello Jade
+  ul
+    -for(var i=0; i<5; i++)
+      li coding
+  div= time
+```
+
+- head 태그 하위에, title 태그를 넣고,  ul 태그 하위에, for 문으로 작성한 코드와 li 태그를 넣는다. 또한, div 태그를 작성한다.
+- `title = title` , `div = time`  는 jade에서 변수를 사용할 때 쓰는 방법이다. 변수를 담은 정보를 적는 곳은 기존에 작성하는 express 가 있는 **`app.js`** 에서 변수를 정의해주면 된다.
+- jade 에서 프로그래밍 언어를 통한 문법으로 작성하려고 한다면, **태그와 구분할 수 있는** `-` 를 반드시 적어줘야한다. (안 적어주면, for 문을 태그로 인식해버린다.)
+
+→ 태그로 지정을 하지 않아야 할 코드들은 제일 앞에 `-` 를 붙이자!
+
+**(app.js)**
+
+```jsx
+var express = require('express');
+
+var app = express();
+app.set('view engine', 'jade');
+app.set('views','./views')
+app.locals.pretty = true;
+// jade로 작성한 코드를 이쁘게 보이게 하는 코드
+
+app.use(express.static('public'));
+
+app.get('/template',function(req,res){
+  res.render('temp', {time:Date(), title:'Jade'});
+  // time 이라는 변수를 사용할 수 있다. time 변수에는, Date() 함수가 들어가는데, 현재시간을 표현해주는 함수이다.
+});
+app.get('/',function(req, res){
+  res.send('Hello! Home Page');
+});
+app.get('/dynamic',function(req,res){
+  var time = Date();
+  var lis = '';
+  for(var i=0;i<10;i++){
+    lis = lis + '<li>coding</li>';
+  }
+  var output = `
+  <!DOCTYPE html>
+  <html lang="en" dir="ltr">
+    <head>
+      <meta charset="utf-8">
+      <title></title>
+    </head>
+    <body>
+      Hello, Dynamic!
+      <ul>
+      ${lis}
+      </ul>
+      ${time}
+    </body>
+  </html>`
+  res.send(output);
+});
+// html을 그대로 붙일 때는, `` 기호를 사용한다. (1번 왼쪽 특수문자)
+app.get('/route',function(req,res){
+  res.send('Hello! Router, <img src="/Nodejs.jpg">')
+})
+app.get('/login',function(req,res){
+  res.send('<h1>Login Please!</h1>')
+});
+
+app.listen(3000,function(){
+  console.log('Conneted 3000 port!')
+});
+```
+
+- `res.render('temp')` 에 jade 파일에서 사용할 변수명을 정의해준다.
+
+→ `res.render('temp', {time : Date(), title : 'Jade'})`  를 적어서, **time 변수 에 현재시각을 알려주는 Date() 함수**를 **title 변수에는 'Jade'를 정의**해준다.
+
+- 이후, '/template'을 확인하면, 사용자의 의도대로 html 이 나오는 것을 볼 수 있다.
+
+작업을 하고 나서 나오는 결과 화면을 이러하다.
+
+**(template html 화면)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/16947467-cd06-48b7-b526-77ae68a1fe4d/Untitled.png
+
+**(template 페이지 소스 화면)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/86dfb3bd-2a0b-4eef-a6a8-0abeb9b573d1/Untitled.png
+
+### **이러한 방식으로, Jade 템플릿 엔진을 활용해서 동적인 파일과 정적인 파일을 한 꺼번에 작성할 수 있게 되었다.**
+
+그 밖의 Jade 문법이 궁금하다면, 해당 사이트를 참고하자.
+
+[Jade - Template Engine](http://jade-lang.com/)
