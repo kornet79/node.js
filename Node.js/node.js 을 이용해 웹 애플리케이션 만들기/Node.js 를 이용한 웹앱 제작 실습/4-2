@@ -1,0 +1,77 @@
+(2) view.jade 파일에 불러온 데이터를 활용해서 프로그래밍 언어로 나열되도록 작성하기
+
+jade 에서 반복문을 사용해야한다.
+
+jade 에서 반복문을 어떻게 사용하는지 먼저 알아보도록 한다.
+
+[Jade Language](http://jade-lang.com/reference/iteration)
+
+해당 사이트를 읽어보면, 이처럼 jade 에 작성했다면,
+
+```
+ul
+each val in [1, 2, 3, 4, 5]
+li= val
+```
+
+이러한 형식으로 나오게 된다.
+
+```
+<ul>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+<li>4</li>
+<li>5</li>
+</ul>
+```
+
+이를 활용해서 가져온 정보를 반복문을 통해서 담아보도록하자.
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1 Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+```
+
+- `ul` 아래부터 반복해야하기 때문에, `ul` 까지는 건들지 않는다.
+- 위에서 찾아본, 반복문을 작성한다. `each topic in topics` 여기에서 `topic` 은 임의로 정한 변수명이고, `topics` 가 중요한데, `topics` 는 `app_file.js` 에서 if 구문을 통해서 `err` 가 없을 때 나오는,
+
+```jsx
+res.render('view', {topics:files})
+```
+
+해당 코드를 통해서, 사용자의 정보가 담긴 `files` 를 담은 변수가 바로 `topics` 이다.
+
+- 이후로, `li` 와 링크형식으로 작성이 되어야하기 때문에 `a(href='/topic/'+topic)= topic` 로 작성하면된다. 링크는, [localhost:3000/topic/javascript](http://localhost:3000/topic/javascript) 와 같은 형식으로 들어가야하기 때문에, 이렇게 작성했다.
+
+### **(결과 출력화면)**
+
+**(/topic)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/02287aae-529a-46bf-98ef-84c59bd1562b/Untitled.png
+
+**(html 페이지 소스)**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/befda481-6a3b-4be5-a90c-e4932a56c0a9/Untitled.png
+
+**(`javascript` 링크를 눌렀을 때, 화면)**
+
+**→ /topic/javascript 라우터를 get 방식으로 만들어줘야한다.**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/9c4db74f-f7d8-4298-96a8-7e95029ca715/Untitled.png
+
+**(`nodejs` 링크를 눌렀을 때, 화면)**
+
+**→ /topic/nodejs 라우터를 get 방식으로 만들어줘야한다.**
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/d429ced7-91e6-4182-87e9-89d15a5e438f/Untitled.png
+
+이 후에는, 본문을 가져오는 라우터를 작성해볼 것이다.
