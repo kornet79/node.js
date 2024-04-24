@@ -1,0 +1,23 @@
+(1) /topic 을 주소창에 입력해서 가져왔을 때, 해당하는 라우터를 만들어보자.
+
+(app.get('/topic') 코드)
+app.get('/topic',function(req,res){
+  fs.readdir('data',function(err,files){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    res.render('view', {topics:files});
+  })
+});
+
+- app.get 을 생성해준다.
+- 생성한 파일을 먼저 읽어야하기 때문에, `fs` 모듈의 `readdir` 메서드를 이용한다.
+
+**(`readdir` 관련 정보 사이트)**
+
+[Node.js v13.13.0 Documentation](https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback)
+
+- `readdir` 의 형식은,`fs.readdir(path[, options], callback)` 으로 이루어져있다. 우리들에게 path 는 사용자가 작성한 파일이 있는 data 폴더이고 콜백함수로 이어지면 되는데, 콜백함수의 인자로, (err,files) 가 들어가야한다. 여기에서 files 는 data 폴더에 있는 파일이름이 들어간다.
+- 똑같이 오류가 발생하면, `res.status(500).send('Internal Server Error')` 로 처리를 해준다.
+- 이렇게 해서 `data` 폴더에서 가져온 데이터들을 만들어놓은 `view.jade` 파일형식에 적용하기 위해서, `topics` 라는 변수에 `files`. 가져온 파일의 데이터를 담아서 `view.jade` 로 보내준다.
