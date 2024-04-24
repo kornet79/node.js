@@ -1,0 +1,101 @@
+# 5. 본문 읽기
+
+만약 사용자가 /topic/javascript 의 형식으로 접근한다면 어떻게 해야할까?
+
+어떻게 라우터와 연결할 것인가? 를 먼저 생각해야한다.
+
+## (1) URL에 찍히는 id 값을 가져오자
+
+사용자가 javascript 링크를 누르면, /topic/javascript 로 이동하게 된다.
+
+이 때, URL 에 나오는 id 값을 가져오면 된다. (링크를 눌러서 정보를 가져오는 방식은 GET)
+
+```jsx
+app.get('/topic/:id',function(req,res){
+  var id = req.params.id;
+```
+
+을 통해서, URL 상에 들어가는 id 값을 받아올 수 있다.
+
+## (2) 받아온 정보를 바탕으로, id 에 해당하는 정보를 가져온다.
+
+저장되어있는 정보를 먼저 가져와야한다.
+
+```jsx
+fs.readdir('data',function(err,files){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } res.render('view',{topics:files});
+})
+```
+
+을 통해서, `data` 폴더 밑에 있는 `files` 의 이름이 담긴 정보를 `topics` 에 담는다.
+
+또한, `files` 안에 있는 `title` 과 `description` 을 가져와야한다.
+
+**(readFile 사용법)**
+
+[Node.js v13.13.0 Documentation](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback)
+
+```jsx
+fs.readFile('data/'+id,'utf8',function(err,data){
+      if (err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }
+      res.render('view',{title:id, description:data});
+    });
+```
+
+`title` 에 해당하는 값은 URL 에 찍힌 `id` 를 담은 `id` 로 가져오고,
+
+`description` 에 해당하는 값은, 파일에 있는 정보를 담은 `data` 를 통해서 가져올 수 있다.
+
+**(다 합친, 완성본)**
+
+```jsx
+app.get('/topic/:id',function(req,res){
+  var id = req.params.id;
+  fs.readdir('data',function(err,files){
+    if (err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    fs.readFile('data/'+id,'utf8',function(err,data){
+      if (err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }
+      res.render('view',{topics:files, title:id, description:data});
+    });
+  })
+});
+```
+
+코드를 통해서,  `view.jade` 파일에 필요한 `topics`, `title`, `description` 을 가져올 수 있게 되었다.
+
+## (3) 가져온 정보들을 바탕으로, view.jade 파일을 수정하기
+
+**(view.jade 파일)**
+
+```
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1 Server Side Javascript
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+    article
+      h2=title
+      =description
+```
+
+- ul 에서 반복문이 시작되기 때문에, ul 과 같은 라인에서 시작한다.
+- article 태그를 이용하고 , `h2=title` 그리고 `=description` 을 사용해서 코드를 작성한다.
+
+---
