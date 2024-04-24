@@ -1,0 +1,135 @@
+---노션---
+https://incredible-guan-388.notion.site/callback-edaadf81b6f84044ab26a072dc557a9d?pvs=74
+
+# 1. 콜백(callback) 함수
+
+: 함수에 인수 안에, 함수가 들어가 있는 것
+
+[[Node.js 강좌] 10. Callback 함수란 무엇인가 ?](https://dalkomit.tistory.com/65)
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/0527c7b7-13c0-42b8-9935-53323f195764/Untitled.png
+
+cmd 창에서, `node` 만 입력하면, 해당 화면처럼 나온다.
+
+그리고 아래의 코드들을 하나씩 입력해보자.
+
+```jsx
+> console.log(1+1);
+2
+undefined
+> a = [3,1,2]; console.log(a);
+[ 3, 1, 2 ]
+undefined
+> a = [3,1,2]; a.sort(); console.log(a);
+[ 1, 2, 3 ]
+undefined
+> a = [3,1,2]; function b(v1, v2){return v2-v1}; a.sort(b); console.log(a);
+[ 3, 2, 1 ]
+undefined
+> a = [3,1,2]; function b(v1, v2){return v1-v2}; a.sort(b); console.log(a);
+[ 1, 2, 3 ]
+undefined
+> a = [3,1,2]; function b(v1, v2){return 0}; a.sort(b); console.log(a);
+[ 3, 1, 2 ]
+undefined
+> a = [3,1,2]; function b(v1, v2){console.log('c',v1,v2); return 0;}; a.sort(b); console.log(a);
+c 1 3
+c 2 1
+[ 3, 1, 2 ]
+undefined
+```
+
+- console.log(1+1)의 값을 계산해서 보여준다. → 2
+- a = [3,1,2] 라는 배열을 만들고, console.log(a) 를 하면, 해당 배열이 나온다. → [3,1,2]
+- 배열을 순서대로 정렬시키기 위해서 `sort()` 를 사용한다.
+
+[JavaScript Array sort() Method](https://www.w3schools.com/jsref/jsref_sort.asp)
+
+- `a.sort()` 를 통해서, a의 배열이 정렬된 것을 확인할 수 있다. →[1,2,3]
+- `a.sort()` 에서 sort 안에 들어가는 값이 양수, 음수, 0 인지에 따라서 정렬의 형태가 바뀐다.
+
+```jsx
+> a = [3,1,2]; function b(v1, v2){return v2-v1}; a.sort(b); console.log(a);
+[ 3, 2, 1 ]
+undefined
+> a = [3,1,2]; function b(v1, v2){return v1-v2}; a.sort(b); console.log(a);
+[ 1, 2, 3 ]
+undefined
+> a = [3,1,2]; function b(v1, v2){return 0}; a.sort(b); console.log(a);
+[ 3, 1, 2 ]
+undefined
+
+// 를 통해서, 양수 음수 0 일 때 정렬의 순서가 바뀌는 것이 sort() 라는 것을 확인할 수 있다.
+```
+
+- (★) `a.sort()` 의 인자 부분에 **함수를 넣을 수 있다.**
+- `function b (v1, v2) { console.log('c', v1, v2); return 0;}; a.sort(b)` 를 하게 될 경우, `a.sort` 의 인수에 **함수 b 가** 들어간 것을 볼 수 있다.
+- (★)이처럼, `function b` 와 같이 인수 부분(**sort()**)에 들어가는 함수를 **콜백함수** 라고 부른다.
+
+[[JavaScript] 자바스크립트 콜백(callback)함수란?](https://webcoding.tistory.com/entry/JavaScript-%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%EC%BD%9C%EB%B0%B1%ED%95%A8%EC%88%98%EB%9E%80)
+
+콜백함수를 정의했지만, 콜백함수를 호출한 것은 **우리가 아닌**, **sort() 라는 함수**가 b 라는 함수를 호출하는 것이다.
+
+```jsx
+function b(v1, v2){console.log('c',v1,v2); return 0;}
+//콜백함수 (callback 함수)
+```
+
+콜백함수는 누군가에게 호출당한 함수이다.
+
+**콜백함수를 통해서, sort() 라는 함수의 기본적인 기능에 '사용자가 로직을 직접 작성함으로써' 추가적으로 더 많은 기능을 추가시킬 수 있다.  → 콜백 함수를 사용하는 이유**
+
+보통 함수에 이름을 주는 데, 함수를 여러 번 호출하고 싶을 때, 함수의 이름을 붙인다.
+
+만약, 정렬순서를 위해서 1회성으로 사용할 함수라면, 이름을 줄 필요가 없다.
+
+그럴 때는,  함수의 이름을 정의하지 않는 **"익명 함수"**를 이용하면 된다.
+
+**(익명함수는, 즉시 사용이 필요한 경우에 사용한다.)**
+
+[javascript 익명함수 간단정리](https://ithub.tistory.com/208)
+
+```jsx
+> a = [3,1,2]; a.sort(function(v1,v2){return v2-v1}); console.log(a);
+[ 3, 2, 1 ]
+undefined
+```
+
+해당 코드에서는, 함수의 이름이 정의되지 않았기에, '**익명함수**'이며, 해당 구문에서 
+
+'**콜백함수'**는  `function(v1,v2){return v2-v1}` 에 해당한다.
+
+→ **코드가 더 짧아지게 되었다.**
+
+```jsx
+> function sort(callback){callback();};
+undefined
+```
+
+sort 라는 함수를 정의했다.
+
+sort 함수는, callback이라는 매개변수를 실행하는 함수이다.
+
+```jsx
+> sort();
+Uncaught TypeError: callback is not a function
+at sort (repl:1:25)
+```
+
+`sort()` 형식으로 실행을한다면, sort() 안에 매개변수가 정의되지 않았기 때문에, callback은 함수가 아니라는 TypeError 가 나오게 된다.
+
+**(위에서 sort 는 정확한 매개변수가 정의된 함수였기 때문에, 매개변수 값을 꼭 넣어줘야한다.)** 
+
+```jsx
+> sort(function(){console.log('Hello Callback')});
+Hello Callback
+undefined
+```
+
+sort 라는 함수의 인자 부분에, function(){console.log('Hello Callback')} 이라는 함수를 정의했다.
+
+따라서, 위에서 정의한 **sort 함수는, 인자부분을 실행하는 함수로 정의**했기 때문에,
+
+function(){console.log('Hello Callback')} 이라는 '**익명함수**'를 실행하게 되는 것이다.
+
+그렇기 때문에, Hello Callback 이 출력되었다.
