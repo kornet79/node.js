@@ -1,0 +1,49 @@
+---노션---
+https://incredible-guan-388.notion.site/supervisor-71caeb7eb9904f7e971c8ec9c729a567?pvs=74
+
+# 1. Supervisor
+
+Supervisor 라는 프로그램은, 코드를 수정하면 노드가 알아서 감지하지 못하기 때문에 껐다 키는 번거로움이 굉장히 많다.
+
+수정할 때마다, 실행된 노드 파일을 `ctrl + c` 를 통해서 끄고, 다시 node 파일을 실행시켜야 변경도니 수정사항이 제대로 적용되어 나타난다.
+
+자동으로 노드를 껐다 키는 것이다.
+
+ 
+
+이러한 번거로움을 없애주는 것이 `supervisor` 이다.
+
+**(해당 모듈을 다운받을 수 있는 정보가 있는 사이트)**
+
+[supervisor](https://www.npmjs.com/package/supervisor)
+
+사이트를 확인해보면, 
+
+```html
+npm install supervisor -g
+```
+
+ 의 형식으로 다운받을 수 있다. (-g 는 전역변수를 의미한다.)
+
+!https://prod-files-secure.s3.us-west-2.amazonaws.com/a156cc82-d201-4160-ac40-16f8ab23f7dc/cc986c52-c370-47b8-aa99-f170b62cbd32/Untitled.png
+
+패키지를 다운받고, 실행을 시켜본다.
+
+```html
+supervisor app.js
+```
+
+이제는 Node.js 를 껐다키는 불필요함을 줄일 수 있게 되었다.
+
+(+)
+
+해당 사이트에서 적용 메뉴얼이 있으니, 궁금할 때 확인해보자.
+
+```html
+Examples:
+  supervisor myapp.js
+  supervisor myapp.coffee
+  supervisor -w scripts -e myext -x myrunner myapp
+  supervisor -w lib,server.js,config.js server.js
+  supervisor -- server.js -h host -p port
+```
